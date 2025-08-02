@@ -1,0 +1,109 @@
+<div class="user-card">
+  <div class="user-card-header">
+    <div class="row">
+      <div class="col-12">
+        <h4 class="user-card-title">Orders</h4>
+      </div>
+    </div>
+  </div>
+
+  <div class="user-card-body">
+    @if(orderLoaded){ @if(orders.length>0){ @for (order of orders; track $index)
+    {
+    <div class="row border mb-3 rounded py-3">
+      <div class="col-">
+        <div class="row align-items-center">
+          <div class="col-1">
+            <img
+              src="{{ apiDomainUrl }}/products/image/{{ order.product.image }}"
+              width="100%"
+            />
+          </div>
+          <div class="col-4">
+            <h6>{{ order.product.name }}</h6>
+            <p>{{ getCategoryString(order.product.type) }}</p>
+            <p>#{{ order.id }}</p>
+          </div>
+          <div class="col-2">
+            <span>Date: {{ order.createdDate | date : "mediumDate" }}</span>
+          </div>
+          <div class="col-2">
+            <span>Status: {{ getStatusString(order.status) }}</span>
+          </div>
+
+          <div class="col text-end">
+            <button
+              type="button"
+              class="btn-icon"
+              data-bs-toggle="collapse"
+              [attr.data-bs-target]="'#orderdetail' + order.id"
+              (click)="order.expanded = !order.expanded"
+            >
+              @if(order.expanded){
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="#757f95"
+                class="bi bi-caret-right-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"
+                />
+              </svg>
+              } @else{
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="#757f95"
+                class="bi bi-caret-down-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"
+                />
+              </svg>
+
+              }
+            </button>
+          </div>
+        </div>
+
+        <div id="orderdetail{{ order.id }}" class="row collapse">
+          <div class="col-md-3 offset-md-1">
+            Location: {{ order.clinic.name }}
+          </div>
+          @if(isNotProcessed(order)){
+          <div class="col-md-8 text-end">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm me-2"
+              tooltip="Edit"
+              (click)="editOrder(order)"
+            >
+              <i class="fa fa-pencil fa-lg"></i>
+            </button>
+
+            <button
+              class="btn btn-outline-secondary btn-sm"
+              data-toggle="tooltip"
+              data-placement="top"
+              tooltip="Delete"
+              (click)="deleteOrder(order)"
+            >
+              <i class="fa fa-trash fa-lg"></i>
+            </button>
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    }} @else{
+    <p>No order available.</p>
+    } }@else{
+    <p>Loading..</p>
+    }
+  </div>
+</div>

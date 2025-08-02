@@ -1,0 +1,6 @@
+@if(formControl.invalid && (formControl.dirty || formControl.touched
+||ngFormTemplate().submitted )) { @if(fieldErrors['required']==true){
+<div class="text-danger">* Required</div>
+} @if(fieldErrors['email']==true){
+<div class="text-danger">* Invalid Email</div>
+} }

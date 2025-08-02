@@ -1,0 +1,91 @@
+<form [formGroup]="orderForm" (submit)="submitOrder()" #form="ngForm">
+  <!-- Modal Header -->
+  <div class="modal-header">
+    <h5 class="modal-title" id="donationModalLabel">{{ title }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      aria-label="Close"
+      (click)="closeModal()"
+    ></button>
+  </div>
+
+  <!-- Modal Body -->
+  <div class="modal-body">
+    <div class="row">
+      <div class="col-12">
+        <!-- Product Header -->
+        <div class="row align-items-center mb-3">
+          <div class="col-auto">
+            <img
+              src="{{ apiDomainUrl }}/products/image/{{ product?.image }}"
+              height="48px"
+            />
+          </div>
+          <div class="col">
+            <h6>{{ product?.name }}</h6>
+            <p class="mb-0">
+              {{ getCategoryString(product?.type) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Clinic -->
+        <div class="row mb-3">
+          <div class="col-md-12">
+            <label>Location</label>
+            <select class="form-select" formControlName="clinicId">
+              @for (clinic of clinics; track clinic.id) {
+              <option [value]="clinic.id">
+                {{ clinic.name }}
+              </option>
+              }
+            </select>
+            <app-validation-message
+              fieldName="clinicId"
+              [formGroup]="orderForm"
+              [ngFormTemplate]="form"
+            ></app-validation-message>
+          </div>
+        </div>
+
+        <!-- Price Detail -->
+        <div class="row">
+          <div class="col-md-12">
+            <label class="mb-1">Order Summary</label>
+            <div class="ps-2">
+              <ul class="list-unstyled category-list">
+                <li>
+                  <label>Price</label>
+                  <span class="float-end">${{ product?.price }}</span>
+                </li>
+                <li>
+                  <label>Shipping</label> <span class="float-end">$0</span>
+                </li>
+                <li class="border-bottom pb-2">
+                  <label>Taxes</label> <span class="float-end">$0</span>
+                </li>
+
+                <li class="fw-bold mt-1">
+                  <label>Total</label>
+                  <span class="float-end">${{ product?.price }}</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Footer -->
+  <div class="modal-foooter">
+    <div class="modal-footer">
+      <button type="submit" class="vein-btn-success">Submit</button>
+      <button type="button" class="vein-btn-light" (click)="closeModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</form>

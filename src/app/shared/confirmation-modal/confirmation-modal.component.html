@@ -1,0 +1,19 @@
+<!-- Header -->
+<div class="modal-header">
+  <h5 class="modal-title text-center w-100" id="donationModalLabel">
+    Confirmation
+  </h5>
+</div>
+<!-- Body -->
+<div class="modal-body text-center">
+  <p class="mb-0">{{ message }}</p>
+</div>
+<!-- Footer -->
+<div class="modal-footer justify-content-center">
+  <button type="button" class="btn btn-danger" (click)="onYesClick()">
+    Yes
+  </button>
+  <button type="button" class="btn btn-secondary" (click)="onNoClick()">
+    No
+  </button>
+</div>

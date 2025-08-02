@@ -1,0 +1,16 @@
+.ng-autocomplete {
+  width: 100%;
+}
+.btn-clear {
+  color: var(--body-text-color);
+  font-weight: 400;
+
+  &:hover {
+    font-weight: 500;
+  }
+}
+
+.list-group-item.active {
+  color: var(--color-white);
+  background-color: var(--theme-color);
+}

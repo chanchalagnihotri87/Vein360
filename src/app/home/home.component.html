@@ -1,0 +1,137 @@
+<div class="row">
+  <!-- Sidebar Container -->
+  <div class="col-md-3">
+    <!-- Search Panel -->
+    <div class="user-card mb-3">
+      <h6 class="mb-3">
+        Search @if(searchText.length>0){
+        <span role="button" class="float-end btn-clear" (click)="clearSearch()">
+          Clear
+        </span>
+        }
+      </h6>
+
+      <div class="user-card-search">
+        <div class="form-group">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="form-control"
+            [(ngModel)]="searchText"
+            (keyup)="onChangeSearch()"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Panel -->
+    <div class="user-card mb-3">
+      <h6 class="mb-3">
+        Category @if(anyCategorySelected){
+        <span
+          role="button"
+          class="float-end btn-clear"
+          (click)="clearCategorySelection()"
+        >
+          Clear
+        </span>
+        }
+      </h6>
+      <ul class="list-group">
+        <li
+          [class]="`list-group-item ${categoryIsSelected(ProductType.ClosureFast)? 'active':''}`"
+          role="button"
+          (click)="toggleCategorySelection(ProductType.ClosureFast)"
+        >
+          Closure Fast
+          <span class="float-end"
+            >({{ getCategoryProductCount(ProductType.ClosureFast) }})</span
+          >
+        </li>
+        <li
+          class="list-group-item"
+          role="button"
+          (click)="toggleCategorySelection(ProductType.IVUS)"
+          [class]="`list-group-item ${categoryIsSelected(ProductType.IVUS)? 'active':''}`"
+        >
+          IVUS Catheter
+          <span class="float-end"
+            >({{ getCategoryProductCount(ProductType.IVUS) }})</span
+          >
+        </li>
+        <li
+          class="list-group-item"
+          role="button"
+          (click)="toggleCategorySelection(ProductType.Urology)"
+          [class]="`list-group-item ${categoryIsSelected(ProductType.Urology)? 'active':''}`"
+        >
+          Urology
+          <span class="float-end"
+            >({{ getCategoryProductCount(ProductType.Urology) }})</span
+          >
+        </li>
+
+        <li
+          class="list-group-item"
+          role="button"
+          (click)="toggleCategorySelection(ProductType.Introducer)"
+          [class]="`list-group-item ${categoryIsSelected(ProductType.Introducer)? 'active':''}`"
+        >
+          Introducer
+          <span class="float-end"
+            >({{ getCategoryProductCount(ProductType.Introducer) }})</span
+          >
+        </li>
+
+        <li
+          class="list-group-item"
+          role="button"
+          (click)="toggleCategorySelection(ProductType.ProcedurePack)"
+          [class]="`list-group-item ${categoryIsSelected(ProductType.ProcedurePack)? 'active':''}`"
+        >
+          Procedure Pack
+          <span class="float-end"
+            >({{ getCategoryProductCount(ProductType.ProcedurePack) }})</span
+          >
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Products Container -->
+  <div class="col-md-9">
+    <div class="row">
+      @for (product of products; track product.id) {
+      <div class="col-md-4">
+        <div class="user-card product-item">
+          <div class="w-100 text-center">
+            <img
+              src="{{ apiDomainUrl }}/products/image/{{ product.image }}"
+              class="img-fluid"
+              alt="{{ product.name }}"
+            />
+          </div>
+
+          <p>{{ product.name }}</p>
+          <div class="row">
+            <div class="col">
+              <span class="text-danger">{{
+                product.price | currency : "USD" : "symbol" : "1.0"
+              }}</span>
+            </div>
+            <div class="col">
+              <button
+                type="button"
+                class="vein-btn-success"
+                (click)="orderNow(product.id)"
+              >
+                Order Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
