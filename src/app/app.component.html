@@ -32,27 +32,15 @@
             >Orders</a
           >
         </li>
-        @if(userIsDonor) {
         <li class="nav-item">
-          <a
-            class="nav-link link-dark"
-            aria-current="page"
-            routerLink="/donations"
-            [routerLinkActive]="['active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-            >Donations</a
+          <button
+            class="vein-btn-success btn-sm me-3"
+            type="button"
+            (click)="goToDonorPortal()"
           >
+            Donate Products
+          </button>
         </li>
-        <li class="nav-item">
-          <a
-            class="nav-link link-dark"
-            routerLink="/container"
-            [routerLinkActive]="['active']"
-            [routerLinkActiveOptions]="{ exact: true }"
-            >Containers</a
-          >
-        </li>
-        }
       </ul>
 
       <div class="dropdown pt-2 text-end">

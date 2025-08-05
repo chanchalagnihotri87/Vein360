@@ -29,7 +29,9 @@ export class LoginComponent {
     private authService: AuthService,
     private accountService: AccountService,
     private router: Router
-  ) {}
+  ) {
+    debugger;
+  }
 
   login() {
     if (this.loginForm.valid) {
