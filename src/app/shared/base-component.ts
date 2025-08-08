@@ -8,4 +8,9 @@ export class BaseComponent {
   protected setBereadcrumb(breadcrumbs: BreadcrumbItem[]) {
     this.breadcrumbService.breadcrumbs.set(breadcrumbs);
   }
+
+  protected hideButtonTooltip(event: Event) {
+    let currentButton = event.currentTarget as HTMLButtonElement;
+    currentButton.blur();
+  }
 }

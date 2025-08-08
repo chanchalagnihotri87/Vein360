@@ -6,11 +6,13 @@ import { environment } from '../../environments/environment';
 import { ProductType } from '../home/shared/product-type';
 import { UserProduct } from '../home/shared/user-product.model';
 import { UserProductService } from '../home/shared/user-product.service';
+import { AddressComponent } from '../shared/address/address.component';
 import { BaseComponent } from '../shared/base-component';
 import { ConfirmationMessageComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { OrderControlComponent } from './order-control/order-control.component';
+import Clinic from './shared/clinic.model';
 import { ClinicService } from './shared/clinic.service';
-import ListItem from './shared/list-tem.model';
+import CreateOrderRequest from './shared/create-order-request.model';
 import { Order } from './shared/order';
 import { OrderStatus } from './shared/order-status';
 import { OrderService } from './shared/order.service';
@@ -18,13 +20,13 @@ import { ProductCategoryService } from './shared/product-category.service';
 
 @Component({
   selector: 'app-order',
-  imports: [TooltipModule, DatePipe],
+  imports: [TooltipModule, DatePipe, AddressComponent],
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss',
 })
 export class OrderComponent extends BaseComponent implements OnInit {
   protected orders: Order[] = [];
-  protected clinics: ListItem[] = [];
+  protected clinics: Clinic[] = [];
   protected orderLoaded = false;
   protected apiDomainUrl = environment.apiUrl;
 
@@ -48,7 +50,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
   }
 
   private loadClinics() {
-    this.clinicService.getClinicsList().subscribe((clinics) => {
+    this.clinicService.getMyClinics().subscribe((clinics) => {
       this.clinics = clinics;
     });
   }
@@ -56,8 +58,6 @@ export class OrderComponent extends BaseComponent implements OnInit {
   private loadOrders() {
     this.orderService.getMyOrders().subscribe((orders) => {
       this.orders = orders;
-      console.log('Orders:');
-      console.log(orders);
       this.orderLoaded = true;
     });
   }
@@ -74,8 +74,60 @@ export class OrderComponent extends BaseComponent implements OnInit {
     return order.status == OrderStatus.Ordered;
   }
 
+  //#region Repeat Order
+  protected repeatOrder(order: Order, event: Event) {
+    this.hideButtonTooltip(event);
+
+    this.userProductService
+      .getProduct(order.product.id)
+      .subscribe((product) => {
+        this.showRepeatOrderModal(order, product);
+      });
+  }
+
+  private showRepeatOrderModal(order: Order, product: UserProduct) {
+    const configuartions: ModalOptions = {
+      initialState: {
+        order: order,
+        product: product,
+        clinicId: order.clinic.id,
+        clinics: this.clinics,
+        title: 'Repeat Order',
+      },
+      backdrop: 'static',
+    };
+
+    this.orderDetailModal = this.modalService.show(
+      OrderControlComponent,
+      configuartions
+    );
+
+    this.orderDetailModal?.content.onSubmit.subscribe(
+      (request: CreateOrderRequest) => {
+        this.orderService
+          .createOrder(request.clinicId, product.id, request.quantity)
+          .subscribe((updatedOrder) => {
+            this.loadOrders();
+            this.hideRepeatOrderModal();
+          });
+      }
+    );
+
+    this.orderDetailModal?.content.onClose.subscribe(() => {
+      this.hideRepeatOrderModal();
+    });
+  }
+
+  private hideRepeatOrderModal() {
+    this.orderDetailModal?.hide();
+  }
+
+  //#endregion
+
   //#region Edit Order
-  protected editOrder(order: Order) {
+  protected editOrder(order: Order, event: Event) {
+    this.hideButtonTooltip(event);
+
     this.userProductService
       .getProduct(order.product.id)
       .subscribe((product) => {
@@ -86,6 +138,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
   private showEditOrderModal(order: Order, product: UserProduct) {
     const configuartions: ModalOptions = {
       initialState: {
+        order: order,
         product: product,
         clinicId: order.clinic.id,
         clinics: this.clinics,
@@ -99,18 +152,20 @@ export class OrderComponent extends BaseComponent implements OnInit {
       configuartions
     );
 
-    this.orderDetailModal?.content.onSubmit.subscribe((clinicId: number) => {
-      this.orderService
-        .updateOrder(order.id, clinicId)
-        .subscribe((updatedOrder) => {
-          //Update order in orders collection
-          let orderIndex = this.orders.indexOf(order);
-          this.orders[orderIndex] = updatedOrder;
+    this.orderDetailModal?.content.onSubmit.subscribe(
+      (request: CreateOrderRequest) => {
+        this.orderService
+          .updateOrder(order.id, request.clinicId, request.quantity)
+          .subscribe((updatedOrder) => {
+            //Update order in orders collection
+            let orderIndex = this.orders.indexOf(order);
+            this.orders[orderIndex] = updatedOrder;
 
-          //Close order modal
-          this.hideEditOrderModal();
-        });
-    });
+            //Close order modal
+            this.hideEditOrderModal();
+          });
+      }
+    );
 
     this.orderDetailModal?.content.onClose.subscribe(() => {
       this.hideEditOrderModal();
@@ -124,7 +179,9 @@ export class OrderComponent extends BaseComponent implements OnInit {
   //#endregion
 
   //#region Delete Order
-  protected deleteOrder(order: Order) {
+  protected deleteOrder(order: Order, event: Event) {
+    this.hideButtonTooltip(event);
+
     const initialState: ModalOptions = {
       initialState: {
         message: 'Are you sure you want to delete this order?',

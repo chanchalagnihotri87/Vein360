@@ -1,5 +1,5 @@
 import Product from '../../home/shared/product.model';
-import ListItem from './list-tem.model';
+import Clinic from './clinic.model';
 import { OrderStatus } from './order-status';
 
 export class Order {
@@ -7,10 +7,11 @@ export class Order {
   constructor(
     public id: number,
     public product: Product,
-    public clinic: ListItem,
+    public clinic: Clinic,
     public price: number,
     public paid: boolean,
     public status: OrderStatus,
+    public quantity: number,
     public createdDate: Date = new Date()
   ) {}
 }

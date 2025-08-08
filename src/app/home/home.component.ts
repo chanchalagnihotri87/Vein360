@@ -9,8 +9,9 @@ import { environment } from '../../environments/environment';
 
 import { UserInfoService } from '../login/shared/user-info.service';
 import { OrderControlComponent } from '../order/order-control/order-control.component';
+import Clinic from '../order/shared/clinic.model';
 import { ClinicService } from '../order/shared/clinic.service';
-import ListItem from '../order/shared/list-tem.model';
+import CreateOrderRequest from '../order/shared/create-order-request.model';
 import { OrderService } from '../order/shared/order.service';
 import { BreadcrumbService } from '../shared/breadcrumb/shared/breadcrumb.service';
 import { ProductType } from './shared/product-type';
@@ -30,7 +31,7 @@ export class HomeComponent implements OnInit {
   allProducts: UserProduct[] = [];
   searchText: string = '';
   selectedCategories: number[] = [];
-  clinics: ListItem[] = [];
+  clinics: Clinic[] = [];
   orderNowModal?: BsModalRef;
 
   apiDomainUrl = environment.apiUrl;
@@ -61,7 +62,7 @@ export class HomeComponent implements OnInit {
   }
 
   private loadClinics() {
-    this.clinicService.getClinicsList().subscribe((clinics) => {
+    this.clinicService.getMyClinics().subscribe((clinics) => {
       this.clinics = clinics;
     });
   }
@@ -170,12 +171,16 @@ export class HomeComponent implements OnInit {
       configuartions
     );
 
-    this.orderNowModal?.content.onSubmit.subscribe((clinicId: number) => {
-      this.orderService.createOrder(product.id, clinicId).subscribe((order) => {
-        this.router.navigate(['orders']);
-        this.hideOrderNowModal();
-      });
-    });
+    this.orderNowModal?.content.onSubmit.subscribe(
+      (orderRequest: CreateOrderRequest) => {
+        this.orderService
+          .createOrder(orderRequest.clinicId, product.id, orderRequest.quantity)
+          .subscribe((order) => {
+            this.router.navigate(['orders']);
+            this.hideOrderNowModal();
+          });
+      }
+    );
 
     this.orderNowModal?.content.onClose.subscribe(() => {
       this.hideOrderNowModal();

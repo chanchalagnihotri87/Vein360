@@ -31,14 +31,14 @@
           </div>
         </div>
 
-        <!-- Clinic -->
+        <!-- Shipping Address -->
         <div class="row mb-3">
           <div class="col-md-12">
-            <label>Location</label>
+            <label>Shipping Address</label>
             <select class="form-select" formControlName="clinicId">
               @for (clinic of clinics; track clinic.id) {
               <option [value]="clinic.id">
-                {{ clinic.name }}
+                <app-address [clinic]="clinic"></app-address>
               </option>
               }
             </select>
@@ -50,6 +50,28 @@
           </div>
         </div>
 
+        <div class="row mb-3">
+          <div class="col-12">
+            <label>Quantity</label>
+            <input
+              type="number"
+              class="form-control"
+              value="1"
+              min="1"
+              oninput="validity.valid||(value='')"
+              (keyup)="changePrice($event)"
+              formControlName="quantity"
+            />
+
+            <app-validation-message
+              [formGroup]="orderForm"
+              [ngFormTemplate]="form"
+              fieldName="quantity"
+            >
+            </app-validation-message>
+          </div>
+        </div>
+
         <!-- Price Detail -->
         <div class="row">
           <div class="col-md-12">
@@ -58,7 +80,7 @@
               <ul class="list-unstyled category-list">
                 <li>
                   <label>Price</label>
-                  <span class="float-end">${{ product?.price }}</span>
+                  <span class="float-end">${{ amount }}</span>
                 </li>
                 <li>
                   <label>Shipping</label> <span class="float-end">$0</span>
@@ -69,7 +91,7 @@
 
                 <li class="fw-bold mt-1">
                   <label>Total</label>
-                  <span class="float-end">${{ product?.price }}</span>
+                  <span class="float-end">${{ amount }}</span>
                 </li>
               </ul>
             </div>
@@ -80,12 +102,11 @@
   </div>
 
   <!-- Modal Footer -->
-  <div class="modal-foooter">
-    <div class="modal-footer">
-      <button type="submit" class="vein-btn-success">Submit</button>
-      <button type="button" class="vein-btn-light" (click)="closeModal()">
-        Cancel
-      </button>
-    </div>
+
+  <div class="modal-footer">
+    <button type="submit" class="vein-btn-success">Submit</button>
+    <button type="button" class="vein-btn-light" (click)="closeModal()">
+      Cancel
+    </button>
   </div>
 </form>

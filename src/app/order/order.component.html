@@ -1,4 +1,5 @@
 <div class="user-card">
+  <!-- Page Header -->
   <div class="user-card-header">
     <div class="row">
       <div class="col-12">
@@ -7,31 +8,33 @@
     </div>
   </div>
 
+  <!-- Order List -->
   <div class="user-card-body">
     @if(orderLoaded){ @if(orders.length>0){ @for (order of orders; track $index)
     {
     <div class="row border mb-3 rounded py-3">
-      <div class="col-">
-        <div class="row align-items-center">
-          <div class="col-1">
+      <div class="col">
+        <!-- First Row -->
+        <div class="row">
+          <div class="col-md-1">
             <img
               src="{{ apiDomainUrl }}/products/image/{{ order.product.image }}"
               width="100%"
             />
           </div>
-          <div class="col-4">
+          <div class="col-md-4">
             <h6>{{ order.product.name }}</h6>
             <p>{{ getCategoryString(order.product.type) }}</p>
             <p>#{{ order.id }}</p>
           </div>
-          <div class="col-2">
-            <span>Date: {{ order.createdDate | date : "mediumDate" }}</span>
+          <div class="col-md-2 pt-md-2">
+            <p>Status: {{ getStatusString(order.status) }}</p>
+            <p>Quantity: {{ order.quantity }}</p>
           </div>
-          <div class="col-2">
-            <span>Status: {{ getStatusString(order.status) }}</span>
+          <div class="col-md-2 pt-md-2">
+            <p>Date: {{ order.createdDate | date : "mediumDate" }}</p>
           </div>
-
-          <div class="col text-end">
+          <div class="col text-md-end pt-md-4">
             <button
               type="button"
               class="btn-icon"
@@ -45,19 +48,6 @@
                 width="24"
                 height="24"
                 fill="#757f95"
-                class="bi bi-caret-right-fill"
-                viewBox="0 0 16 16"
-              >
-                <path
-                  d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"
-                />
-              </svg>
-              } @else{
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                fill="#757f95"
                 class="bi bi-caret-down-fill"
                 viewBox="0 0 16 16"
               >
@@ -66,22 +56,45 @@
                 />
               </svg>
 
+              } @else{
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                fill="#757f95"
+                class="bi bi-caret-right-fill"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z"
+                />
+              </svg>
               }
             </button>
           </div>
         </div>
-
+        <!-- Second Row -->
         <div id="orderdetail{{ order.id }}" class="row collapse">
           <div class="col-md-3 offset-md-1">
-            Location: {{ order.clinic.name }}
+            Shipping Address:
+            <app-address [clinic]="order.clinic"></app-address>
           </div>
+
           @if(isNotProcessed(order)){
-          <div class="col-md-8 text-end">
+          <div class="col-md-8 text-md-end">
+            <button
+              type="button"
+              class="btn btn-outline-secondary btn-sm me-2"
+              tooltip="Repeat"
+              (click)="repeatOrder(order, $event)"
+            >
+              <i class="fa fa-repeat fa-lg"></i>
+            </button>
             <button
               type="button"
               class="btn btn-outline-secondary btn-sm me-2"
               tooltip="Edit"
-              (click)="editOrder(order)"
+              (click)="editOrder(order, $event)"
             >
               <i class="fa fa-pencil fa-lg"></i>
             </button>
@@ -91,7 +104,7 @@
               data-toggle="tooltip"
               data-placement="top"
               tooltip="Delete"
-              (click)="deleteOrder(order)"
+              (click)="deleteOrder(order, $event)"
             >
               <i class="fa fa-trash fa-lg"></i>
             </button>

@@ -10,13 +10,17 @@ export class OrderService {
   private readonly baseUrl = `${environment.apiUrl}/orders`;
   constructor(private httpClient: HttpClient) {}
 
-  createOrder(productId: number, clinicId: number) {
-    return this.httpClient.post(this.baseUrl, { productId, clinicId });
+  createOrder(clinicId: number, productId: number, quantity: number) {
+    return this.httpClient.post(this.baseUrl, {
+      clinicId,
+      productId,
+      quantity,
+    });
   }
 
-  updateOrder(id: number, clinicId: number) {
+  updateOrder(id: number, clinicId: number, quantity: number) {
     return this.httpClient.patch<Order>(
-      `${this.baseUrl}/${id}?clinicId=${clinicId}`,
+      `${this.baseUrl}/${id}?clinicId=${clinicId}&quantity=${quantity}`,
       {}
     );
   }
