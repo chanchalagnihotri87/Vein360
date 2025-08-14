@@ -36,6 +36,8 @@ export class HomeComponent implements OnInit {
 
   apiDomainUrl = environment.apiUrl;
 
+  accessoryItemsSelected = false;
+
   constructor(
     private readonly breadcrumbService: BreadcrumbService,
     private readonly userProductService: UserProductService,
@@ -75,6 +77,12 @@ export class HomeComponent implements OnInit {
     return this.allProducts.filter((x) => x.type == category).length;
   }
 
+  protected getAccessoryProductCount() {
+    return this.allProducts.filter(
+      (x) => x.type != ProductType.ClosureFast && x.type != ProductType.IVUS
+    ).length;
+  }
+
   protected get ProductType() {
     return ProductType;
   }
@@ -103,9 +111,13 @@ export class HomeComponent implements OnInit {
         .filter((x) => x.searchRank > 0);
     }
 
-    if (this.selectedCategories.length > 0) {
+    if (this.selectedCategories.length > 0 || this.accessoryItemsSelected) {
       filteredProducts = filteredProducts.filter(
-        (x) => this.selectedCategories.indexOf(x.type) > -1
+        (x) =>
+          this.selectedCategories.indexOf(x.type) > -1 ||
+          (this.accessoryItemsSelected &&
+            x.type != ProductType.ClosureFast &&
+            x.type != ProductType.IVUS)
       );
     }
 
@@ -115,7 +127,6 @@ export class HomeComponent implements OnInit {
   }
 
   protected clearSearch() {
-    console.log('clear serach called');
     this.searchText = '';
     this.onChangeSearch();
   }
@@ -130,6 +141,11 @@ export class HomeComponent implements OnInit {
       );
     }
 
+    this.filterProducts();
+  }
+
+  protected toggleAccessoryItemsSelection() {
+    this.accessoryItemsSelected = !this.accessoryItemsSelected;
     this.filterProducts();
   }
 

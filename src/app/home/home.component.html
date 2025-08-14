@@ -43,7 +43,7 @@
           role="button"
           (click)="toggleCategorySelection(ProductType.ClosureFast)"
         >
-          Closure Fast
+          Reprocessed Closurefast Catheters
           <span class="float-end"
             >({{ getCategoryProductCount(ProductType.ClosureFast) }})</span
           >
@@ -54,46 +54,20 @@
           (click)="toggleCategorySelection(ProductType.IVUS)"
           [class]="`list-group-item ${categoryIsSelected(ProductType.IVUS)? 'active':''}`"
         >
-          IVUS Catheter
+          Reprocessed Philips IVUS Catheters
           <span class="float-end"
             >({{ getCategoryProductCount(ProductType.IVUS) }})</span
           >
         </li>
-        <!-- No product available for sale in this category and chris doesn't want to show on sale page. -->
-        <!-- <li
-          class="list-group-item"
-          role="button"
-          (click)="toggleCategorySelection(ProductType.Urology)"
-          [class]="`list-group-item ${categoryIsSelected(ProductType.Urology)? 'active':''}`"
-        >
-          Urology
-          <span class="float-end"
-            >({{ getCategoryProductCount(ProductType.Urology) }})</span
-          >
-        </li> -->
 
         <li
           class="list-group-item"
           role="button"
-          (click)="toggleCategorySelection(ProductType.Introducer)"
-          [class]="`list-group-item ${categoryIsSelected(ProductType.Introducer)? 'active':''}`"
+          (click)="toggleAccessoryItemsSelection()"
+          [class]="`list-group-item ${accessoryItemsSelected? 'active':''}`"
         >
-          Introducer
-          <span class="float-end"
-            >({{ getCategoryProductCount(ProductType.Introducer) }})</span
-          >
-        </li>
-
-        <li
-          class="list-group-item"
-          role="button"
-          (click)="toggleCategorySelection(ProductType.ProcedurePack)"
-          [class]="`list-group-item ${categoryIsSelected(ProductType.ProcedurePack)? 'active':''}`"
-        >
-          Procedure Pack
-          <span class="float-end"
-            >({{ getCategoryProductCount(ProductType.ProcedurePack) }})</span
-          >
+          Accessory Items
+          <span class="float-end">({{ getAccessoryProductCount() }})</span>
         </li>
       </ul>
     </div>
