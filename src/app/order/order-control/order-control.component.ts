@@ -45,15 +45,46 @@ export class OrderControlComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.amount = this.productRate;
-    this.updateOrderFormValues(this.clinicId);
-
     if (this.order) {
       this.updateOrderFormValues(this.clinicId, this.order.quantity);
       this.amount = this.productRate * this.order.quantity;
+      return;
+    }
+
+    this.amount = this.productRate;
+    this.updateOrderFormValues(this.clinicId);
+  }
+
+  //#region  Public Methods
+  protected changePrice(event: Event) {
+    let quantity = (event.currentTarget as HTMLInputElement).value;
+    if (quantity) {
+      this.amount = this.productRate! * ConversionHelper.convertToInt(quantity);
+      return;
+    }
+    this.amount = this.productRate;
+  }
+
+  protected submitOrder() {
+    if (this.orderForm.valid) {
+      this.onSubmit.emit({
+        clinicId: this.orderForm.value.clinicId,
+        quantity: this.orderForm.value.quantity,
+      });
     }
   }
 
+  protected closeModal() {
+    this.onClose.emit();
+  }
+
+  protected getCategoryString(cateory?: number) {
+    return this.productCategoryService.getCategoryString(cateory);
+  }
+
+  //#endregion
+
+  //#region Private Methods
   private createOrderForm() {
     return this.formBuilder.group({
       clinicId: ['', Validators.required],
@@ -75,33 +106,6 @@ export class OrderControlComponent implements OnInit {
         quantity: quantity,
       });
     }
-  }
-
-  protected changePrice(event: Event) {
-    let quantity = (event.currentTarget as HTMLInputElement).value;
-    if (quantity) {
-      this.amount = this.productRate! * ConversionHelper.convertToInt(quantity);
-      return;
-    }
-    this.amount = this.productRate;
-  }
-
-  //#region  Protected Methods
-  protected submitOrder() {
-    if (this.orderForm.valid) {
-      this.onSubmit.emit({
-        clinicId: this.orderForm.value.clinicId,
-        quantity: this.orderForm.value.quantity,
-      });
-    }
-  }
-
-  protected closeModal() {
-    this.onClose.emit();
-  }
-
-  protected getCategoryString(cateory?: number) {
-    return this.productCategoryService.getCategoryString(cateory);
   }
 
   //#endregion

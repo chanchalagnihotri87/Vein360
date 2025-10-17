@@ -16,7 +16,6 @@ import { OrderService } from '../order/shared/order.service';
 import { BreadcrumbService } from '../shared/breadcrumb/shared/breadcrumb.service';
 import { ProductType } from './shared/product-type';
 import Product from './shared/product.model';
-import { ProductService } from './shared/product.service';
 import { UserProduct } from './shared/user-product.model';
 import { UserProductService } from './shared/user-product.service';
 
@@ -27,16 +26,18 @@ import { UserProductService } from './shared/user-product.service';
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
-  products: UserProduct[] = [];
-  allProducts: UserProduct[] = [];
-  searchText: string = '';
-  selectedCategories: number[] = [];
-  clinics: Clinic[] = [];
-  orderNowModal?: BsModalRef;
+  protected products: UserProduct[] = [];
+  protected allProducts: UserProduct[] = [];
+  protected searchText: string = '';
+  protected selectedCategories: number[] = [];
+  protected clinics: Clinic[] = [];
+  protected orderNowModal?: BsModalRef;
+  protected apiDomainUrl = environment.apiUrl;
+  protected accessoryItemsSelected = false;
 
-  apiDomainUrl = environment.apiUrl;
-
-  accessoryItemsSelected = false;
+  protected get ProductType() {
+    return ProductType;
+  }
 
   constructor(
     private readonly breadcrumbService: BreadcrumbService,
@@ -45,8 +46,7 @@ export class HomeComponent implements OnInit {
     private readonly modalService: BsModalService,
     private readonly orderService: OrderService,
     private readonly router: Router,
-    private readonly clinicService: ClinicService,
-    private readonly productService: ProductService
+    private readonly clinicService: ClinicService
   ) {
     this.setBereadcrumb();
   }
@@ -56,21 +56,12 @@ export class HomeComponent implements OnInit {
     this.loadClinics();
   }
 
-  private loadProducts() {
-    this.userProductService.getSaleProducts().subscribe((products) => {
-      this.products = products;
-      this.allProducts = products;
-    });
-  }
+  //#region Public Methods
 
-  private loadClinics() {
-    this.clinicService.getMyClinics().subscribe((clinics) => {
-      this.clinics = clinics;
+  protected orderNow(productId: number) {
+    this.userProductService.getProduct(productId).subscribe((product) => {
+      this.showOrderNowModal(product);
     });
-  }
-
-  private setBereadcrumb() {
-    this.breadcrumbService.breadcrumbs.set([{ label: 'Home', path: '' }]);
   }
 
   protected getCategoryProductCount(category: number) {
@@ -83,11 +74,8 @@ export class HomeComponent implements OnInit {
     ).length;
   }
 
-  protected get ProductType() {
-    return ProductType;
-  }
-
   //#region Search Products
+
   protected onChangeSearch() {
     this.filterProducts();
   }
@@ -164,11 +152,25 @@ export class HomeComponent implements OnInit {
 
   //#endregion
 
-  //#region OrderNow
-  protected orderNow(productId: number) {
-    this.userProductService.getProduct(productId).subscribe((product) => {
-      this.showOrderNowModal(product);
+  //#endregion
+
+  //#region Private Methods
+
+  private loadProducts() {
+    this.userProductService.getSaleProducts().subscribe((products) => {
+      this.products = products;
+      this.allProducts = products;
     });
+  }
+
+  private loadClinics() {
+    this.clinicService.getMyClinics().subscribe((clinics) => {
+      this.clinics = clinics;
+    });
+  }
+
+  private setBereadcrumb() {
+    this.breadcrumbService.breadcrumbs.set([{ label: 'Home', path: '' }]);
   }
 
   private showOrderNowModal(product: Product) {

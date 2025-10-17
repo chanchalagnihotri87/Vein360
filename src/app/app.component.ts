@@ -14,14 +14,7 @@ import { LoaderComponent } from './shared/loader/loader.component';
   styleUrl: './app.component.scss',
 })
 export class AppComponent {
-  title = 'Vein360.Donor';
-
-  constructor(private authService: AuthService, private router: Router) {}
-
-  logout() {
-    this.authService.logOut();
-    this.router.navigate(['/login']);
-  }
+  protected title = 'Vein360.Donor';
 
   get userIsLoggedIn() {
     return this.authService.isLoggedIn();
@@ -29,6 +22,13 @@ export class AppComponent {
 
   get userIsDonor() {
     return this.authService.isDonor();
+  }
+
+  constructor(private authService: AuthService, private router: Router) {}
+
+  logout() {
+    this.authService.logOut();
+    this.router.navigate(['/login']);
   }
 
   protected goToDonorPortal() {

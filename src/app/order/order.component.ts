@@ -49,16 +49,49 @@ export class OrderComponent extends BaseComponent implements OnInit {
     this.loadClinics();
   }
 
-  private loadClinics() {
-    this.clinicService.getMyClinics().subscribe((clinics) => {
-      this.clinics = clinics;
-    });
+  //#region Public Methods
+  protected repeatOrder(order: Order, event: Event) {
+    this.hideButtonTooltip(event);
+
+    this.userProductService
+      .getProduct(order.product.id)
+      .subscribe((product) => {
+        this.showRepeatOrderModal(order, product);
+      });
   }
 
-  private loadOrders() {
-    this.orderService.getMyOrders().subscribe((orders) => {
-      this.orders = orders;
-      this.orderLoaded = true;
+  protected editOrder(order: Order, event: Event) {
+    this.hideButtonTooltip(event);
+
+    this.userProductService
+      .getProduct(order.product.id)
+      .subscribe((product) => {
+        this.showEditOrderModal(order, product);
+      });
+  }
+
+  protected deleteOrder(order: Order, event: Event) {
+    this.hideButtonTooltip(event);
+
+    const initialState: ModalOptions = {
+      initialState: {
+        message: 'Are you sure you want to delete this order?',
+      },
+    };
+    this.confirmationModalRef = this.modalService.show(
+      ConfirmationMessageComponent,
+      initialState
+    );
+
+    this.confirmationModalRef.content.onYes.subscribe(() => {
+      this.orderService.deleteOrder(order.id).subscribe(() => {
+        this.hideConfirmationModal();
+        this.orders = this.orders.filter((ord) => ord.id != order.id);
+      });
+    });
+
+    this.confirmationModalRef.content.onNo.subscribe(() => {
+      this.hideConfirmationModal();
     });
   }
 
@@ -74,15 +107,21 @@ export class OrderComponent extends BaseComponent implements OnInit {
     return order.status == OrderStatus.Ordered;
   }
 
-  //#region Repeat Order
-  protected repeatOrder(order: Order, event: Event) {
-    this.hideButtonTooltip(event);
+  //#endregion
 
-    this.userProductService
-      .getProduct(order.product.id)
-      .subscribe((product) => {
-        this.showRepeatOrderModal(order, product);
-      });
+  //#region Private Methods
+
+  private loadClinics() {
+    this.clinicService.getMyClinics().subscribe((clinics) => {
+      this.clinics = clinics;
+    });
+  }
+
+  private loadOrders() {
+    this.orderService.getMyOrders().subscribe((orders) => {
+      this.orders = orders;
+      this.orderLoaded = true;
+    });
   }
 
   private showRepeatOrderModal(order: Order, product: UserProduct) {
@@ -120,19 +159,6 @@ export class OrderComponent extends BaseComponent implements OnInit {
 
   private hideRepeatOrderModal() {
     this.orderDetailModal?.hide();
-  }
-
-  //#endregion
-
-  //#region Edit Order
-  protected editOrder(order: Order, event: Event) {
-    this.hideButtonTooltip(event);
-
-    this.userProductService
-      .getProduct(order.product.id)
-      .subscribe((product) => {
-        this.showEditOrderModal(order, product);
-      });
   }
 
   private showEditOrderModal(order: Order, product: UserProduct) {
@@ -174,34 +200,6 @@ export class OrderComponent extends BaseComponent implements OnInit {
 
   private hideEditOrderModal() {
     this.orderDetailModal?.hide();
-  }
-
-  //#endregion
-
-  //#region Delete Order
-  protected deleteOrder(order: Order, event: Event) {
-    this.hideButtonTooltip(event);
-
-    const initialState: ModalOptions = {
-      initialState: {
-        message: 'Are you sure you want to delete this order?',
-      },
-    };
-    this.confirmationModalRef = this.modalService.show(
-      ConfirmationMessageComponent,
-      initialState
-    );
-
-    this.confirmationModalRef.content.onYes.subscribe(() => {
-      this.orderService.deleteOrder(order.id).subscribe(() => {
-        this.hideConfirmationModal();
-        this.orders = this.orders.filter((ord) => ord.id != order.id);
-      });
-    });
-
-    this.confirmationModalRef.content.onNo.subscribe(() => {
-      this.hideConfirmationModal();
-    });
   }
 
   private hideConfirmationModal() {
