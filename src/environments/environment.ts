@@ -1,4 +1,4 @@
 export const environment = {
-  apiUrl: 'https://vein-360-api-avgccdhghpahehgj.eastus2-01.azurewebsites.net',
-  donorPortalUrl: 'https://gentle-glacier-01a07a80f.6.azurestaticapps.net',
+  apiUrl: 'https://vein360-api-dev-auekcfcdfkdggace.canadacentral-01.azurewebsites.net/',
+  donorPortalUrl: 'https://lemon-forest-066e8950f.6.azurestaticapps.net',
 };
