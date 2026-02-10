@@ -398,3 +398,21 @@ header,
   padding-top: 0;
   opacity: 0.5;
 }
+
+.toast-container {
+  .ngx-toastr {
+    width: 300px;
+
+    .toast-progress {
+      background-color: #f5f7fa;
+    }
+  }
+}
+
+.toast-container.toast-top-center .ngx-toastr.wide-toast {
+  width: 330px;
+}
+
+.toast-container.toast-top-center .ngx-toastr.wide-error-toast {
+  width: 480px;
+}
