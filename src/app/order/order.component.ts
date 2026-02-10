@@ -9,6 +9,8 @@ import { UserProductService } from '../home/shared/user-product.service';
 import { AddressComponent } from '../shared/address/address.component';
 import { BaseComponent } from '../shared/base-component';
 import { ConfirmationMessageComponent } from '../shared/confirmation-modal/confirmation-modal.component';
+import { MessageDisplayService } from '../shared/message-display/message-display.service';
+import { TempDataService } from '../shared/temp-data/tempdata.service';
 import { OrderControlComponent } from './order-control/order-control.component';
 import Clinic from './shared/clinic.model';
 import { ClinicService } from './shared/clinic.service';
@@ -38,15 +40,27 @@ export class OrderComponent extends BaseComponent implements OnInit {
     private readonly modalService: BsModalService,
     private readonly clinicService: ClinicService,
     private readonly userProductService: UserProductService,
-    private readonly productCategoryService: ProductCategoryService
+    private readonly productCategoryService: ProductCategoryService,
+    private readonly tempData: TempDataService,
+    private readonly msgDisplayService: MessageDisplayService,
   ) {
     super();
   }
 
   ngOnInit(): void {
-    this.loadOrders();
     this.setBereadcrumb([{ label: 'Orders', path: '' }]);
     this.loadClinics();
+
+    if (this.tempData.getData('orderCreated')) {
+      this.loadOrders(() =>
+        this.msgDisplayService.showSuccessMessage(
+          'Order created successfully.',
+        ),
+      );
+      return;
+    }
+
+    this.loadOrders();
   }
 
   //#region Public Methods
@@ -80,13 +94,16 @@ export class OrderComponent extends BaseComponent implements OnInit {
     };
     this.confirmationModalRef = this.modalService.show(
       ConfirmationMessageComponent,
-      initialState
+      initialState,
     );
 
     this.confirmationModalRef.content.onYes.subscribe(() => {
       this.orderService.deleteOrder(order.id).subscribe(() => {
         this.hideConfirmationModal();
         this.orders = this.orders.filter((ord) => ord.id != order.id);
+        this.msgDisplayService.showSuccessMessage(
+          'Order deleted successfully.',
+        );
       });
     });
 
@@ -117,10 +134,14 @@ export class OrderComponent extends BaseComponent implements OnInit {
     });
   }
 
-  private loadOrders() {
+  private loadOrders(callback?: () => void) {
     this.orderService.getMyOrders().subscribe((orders) => {
       this.orders = orders;
       this.orderLoaded = true;
+
+      if (callback) {
+        callback();
+      }
     });
   }
 
@@ -138,7 +159,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
 
     this.orderDetailModal = this.modalService.show(
       OrderControlComponent,
-      configuartions
+      configuartions,
     );
 
     this.orderDetailModal?.content.onSubmit.subscribe(
@@ -146,10 +167,14 @@ export class OrderComponent extends BaseComponent implements OnInit {
         this.orderService
           .createOrder(request.clinicId, product.id, request.quantity)
           .subscribe((updatedOrder) => {
-            this.loadOrders();
+            this.loadOrders(() =>
+              this.msgDisplayService.showSuccessMessage(
+                'Order created successfully.',
+              ),
+            );
             this.hideRepeatOrderModal();
           });
-      }
+      },
     );
 
     this.orderDetailModal?.content.onClose.subscribe(() => {
@@ -175,7 +200,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
 
     this.orderDetailModal = this.modalService.show(
       OrderControlComponent,
-      configuartions
+      configuartions,
     );
 
     this.orderDetailModal?.content.onSubmit.subscribe(
@@ -189,8 +214,12 @@ export class OrderComponent extends BaseComponent implements OnInit {
 
             //Close order modal
             this.hideEditOrderModal();
+
+            this.msgDisplayService.showSuccessMessage(
+              'Order updated successfully.',
+            );
           });
-      }
+      },
     );
 
     this.orderDetailModal?.content.onClose.subscribe(() => {
