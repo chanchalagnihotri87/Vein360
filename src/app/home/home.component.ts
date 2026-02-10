@@ -7,6 +7,7 @@ import { BsModalRef, BsModalService, ModalOptions } from 'ngx-bootstrap/modal';
 
 import { environment } from '../../environments/environment';
 
+import { ToastrService } from 'ngx-toastr';
 import { UserInfoService } from '../login/shared/user-info.service';
 import { OrderControlComponent } from '../order/order-control/order-control.component';
 import Clinic from '../order/shared/clinic.model';
@@ -14,6 +15,7 @@ import { ClinicService } from '../order/shared/clinic.service';
 import CreateOrderRequest from '../order/shared/create-order-request.model';
 import { OrderService } from '../order/shared/order.service';
 import { BreadcrumbService } from '../shared/breadcrumb/shared/breadcrumb.service';
+import { TempDataService } from '../shared/temp-data/tempdata.service';
 import { ProductType } from './shared/product-type';
 import Product from './shared/product.model';
 import { UserProduct } from './shared/user-product.model';
@@ -46,7 +48,9 @@ export class HomeComponent implements OnInit {
     private readonly modalService: BsModalService,
     private readonly orderService: OrderService,
     private readonly router: Router,
-    private readonly clinicService: ClinicService
+    private readonly clinicService: ClinicService,
+    private readonly toast: ToastrService,
+    private readonly tempData: TempDataService,
   ) {
     this.setBereadcrumb();
   }
@@ -70,7 +74,7 @@ export class HomeComponent implements OnInit {
 
   protected getAccessoryProductCount() {
     return this.allProducts.filter(
-      (x) => x.type != ProductType.ClosureFast && x.type != ProductType.IVUS
+      (x) => x.type != ProductType.ClosureFast && x.type != ProductType.IVUS,
     ).length;
   }
 
@@ -105,12 +109,12 @@ export class HomeComponent implements OnInit {
           this.selectedCategories.indexOf(x.type) > -1 ||
           (this.accessoryItemsSelected &&
             x.type != ProductType.ClosureFast &&
-            x.type != ProductType.IVUS)
+            x.type != ProductType.IVUS),
       );
     }
 
     this.products = filteredProducts.sort((a, b) =>
-      a.searchRank > b.searchRank ? -1 : 1
+      a.searchRank > b.searchRank ? -1 : 1,
     );
   }
 
@@ -125,7 +129,7 @@ export class HomeComponent implements OnInit {
     } else {
       this.selectedCategories.splice(
         this.selectedCategories.indexOf(category),
-        1
+        1,
       );
     }
 
@@ -186,7 +190,7 @@ export class HomeComponent implements OnInit {
 
     this.orderNowModal = this.modalService.show(
       OrderControlComponent,
-      configuartions
+      configuartions,
     );
 
     this.orderNowModal?.content.onSubmit.subscribe(
@@ -194,10 +198,11 @@ export class HomeComponent implements OnInit {
         this.orderService
           .createOrder(orderRequest.clinicId, product.id, orderRequest.quantity)
           .subscribe((order) => {
+            this.tempData.setData('orderCreated', true);
             this.router.navigate(['orders']);
             this.hideOrderNowModal();
           });
-      }
+      },
     );
 
     this.orderNowModal?.content.onClose.subscribe(() => {

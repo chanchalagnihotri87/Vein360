@@ -4,10 +4,15 @@
     <!-- Search Panel -->
     <div class="user-card mb-3">
       <h6 class="mb-3">
-        Search @if(searchText.length>0){
-        <span role="button" class="float-end btn-clear" (click)="clearSearch()">
-          Clear
-        </span>
+        Search
+        @if (searchText.length > 0) {
+          <span
+            role="button"
+            class="float-end btn-clear"
+            (click)="clearSearch()"
+          >
+            Clear
+          </span>
         }
       </h6>
 
@@ -27,19 +32,22 @@
     <!-- Category Panel -->
     <div class="user-card mb-3">
       <h6 class="mb-3">
-        Category @if(anyCategorySelected){
-        <span
-          role="button"
-          class="float-end btn-clear"
-          (click)="clearCategorySelection()"
-        >
-          Clear
-        </span>
+        Category
+        @if (anyCategorySelected) {
+          <span
+            role="button"
+            class="float-end btn-clear"
+            (click)="clearCategorySelection()"
+          >
+            Clear
+          </span>
         }
       </h6>
       <ul class="list-group">
         <li
-          [class]="`list-group-item ${categoryIsSelected(ProductType.ClosureFast)? 'active':''}`"
+          [class]="
+            `list-group-item ${categoryIsSelected(ProductType.ClosureFast) ? 'active' : ''}`
+          "
           role="button"
           (click)="toggleCategorySelection(ProductType.ClosureFast)"
         >
@@ -52,7 +60,9 @@
           class="list-group-item"
           role="button"
           (click)="toggleCategorySelection(ProductType.IVUS)"
-          [class]="`list-group-item ${categoryIsSelected(ProductType.IVUS)? 'active':''}`"
+          [class]="
+            `list-group-item ${categoryIsSelected(ProductType.IVUS) ? 'active' : ''}`
+          "
         >
           Reprocessed Philips IVUS Catheters
           <span class="float-end"
@@ -64,7 +74,7 @@
           class="list-group-item"
           role="button"
           (click)="toggleAccessoryItemsSelection()"
-          [class]="`list-group-item ${accessoryItemsSelected? 'active':''}`"
+          [class]="`list-group-item ${accessoryItemsSelected ? 'active' : ''}`"
         >
           Accessory Items
           <span class="float-end">({{ getAccessoryProductCount() }})</span>
@@ -77,35 +87,35 @@
   <div class="col-md-9">
     <div class="row">
       @for (product of products; track product.id) {
-      <div class="col-md-4">
-        <div class="user-card product-item">
-          <div class="w-100 text-center">
-            <img
-              src="{{ apiDomainUrl }}/products/image/{{ product.image }}"
-              class="img-fluid"
-              alt="{{ product.name }}"
-            />
-          </div>
-
-          <p>{{ product.name }}</p>
-          <div class="row">
-            <div class="col">
-              <span class="text-danger">{{
-                product.price | currency : "USD" : "symbol" : "1.0"
-              }}</span>
+        <div class="col-md-4">
+          <div class="user-card product-item">
+            <div class="w-100 text-center">
+              <img
+                src="{{ apiDomainUrl }}/products/image/{{ product.image }}"
+                class="img-fluid"
+                alt="{{ product.name }}"
+              />
             </div>
-            <div class="col">
-              <button
-                type="button"
-                class="vein-btn-success"
-                (click)="orderNow(product.id)"
-              >
-                Order Now
-              </button>
+
+            <p>{{ product.name }}</p>
+            <div class="row">
+              <div class="col">
+                <span class="text-danger">{{
+                  product.price | currency: "USD" : "symbol" : "1.0"
+                }}</span>
+              </div>
+              <div class="col">
+                <button
+                  type="button"
+                  class="vein-btn-success"
+                  (click)="orderNow(product.id)"
+                >
+                  Order Now
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       }
     </div>
   </div>
