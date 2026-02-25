@@ -10,6 +10,8 @@ import { AddressComponent } from '../shared/address/address.component';
 import { BaseComponent } from '../shared/base-component';
 import { ConfirmationMessageComponent } from '../shared/confirmation-modal/confirmation-modal.component';
 import { MessageDisplayService } from '../shared/message-display/message-display.service';
+import PagedResponse from '../shared/paged-response/paged-response';
+import { PagingControlComponent } from '../shared/paging/paging-control.component';
 import { TempDataService } from '../shared/temp-data/tempdata.service';
 import { OrderControlComponent } from './order-control/order-control.component';
 import Clinic from './shared/clinic.model';
@@ -22,7 +24,7 @@ import { ProductCategoryService } from './shared/product-category.service';
 
 @Component({
   selector: 'app-order',
-  imports: [TooltipModule, DatePipe, AddressComponent],
+  imports: [TooltipModule, DatePipe, AddressComponent, PagingControlComponent],
   templateUrl: './order.component.html',
   styleUrl: './order.component.scss',
 })
@@ -31,9 +33,12 @@ export class OrderComponent extends BaseComponent implements OnInit {
   protected clinics: Clinic[] = [];
   protected orderLoaded = false;
   protected apiDomainUrl = environment.apiUrl;
+  protected pageNo = 0;
+  protected pagedOrders?: PagedResponse<Order>;
 
   private orderDetailModal?: BsModalRef;
   private confirmationModalRef?: BsModalRef;
+  private defaultPageNo = 1;
 
   constructor(
     private readonly orderService: OrderService,
@@ -52,7 +57,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
     this.loadClinics();
 
     if (this.tempData.getData('orderCreated')) {
-      this.loadOrders(() =>
+      this.loadOrders(this.defaultPageNo, () =>
         this.msgDisplayService.showSuccessMessage(
           'Order created successfully.',
         ),
@@ -60,7 +65,7 @@ export class OrderComponent extends BaseComponent implements OnInit {
       return;
     }
 
-    this.loadOrders();
+    this.loadOrders(this.defaultPageNo);
   }
 
   //#region Public Methods
@@ -134,15 +139,25 @@ export class OrderComponent extends BaseComponent implements OnInit {
     });
   }
 
-  private loadOrders(callback?: () => void) {
-    this.orderService.getMyOrders().subscribe((orders) => {
-      this.orders = orders;
+  private loadOrders(pageNo: number, callback?: () => void) {
+    this.orderService.getMyOrders(pageNo).subscribe((resp) => {
+      this.pagedOrders = new PagedResponse<Order>(
+        resp.items,
+        resp.totalPages,
+        resp.currentPage,
+      );
+      this.orders = resp.items;
       this.orderLoaded = true;
+      this.pageNo = pageNo;
 
       if (callback) {
         callback();
       }
     });
+  }
+
+  goToPage(page: number) {
+    this.loadOrders(page);
   }
 
   private showRepeatOrderModal(order: Order, product: UserProduct) {
@@ -167,10 +182,12 @@ export class OrderComponent extends BaseComponent implements OnInit {
         this.orderService
           .createOrder(request.clinicId, product.id, request.quantity)
           .subscribe((updatedOrder) => {
-            this.loadOrders(() =>
-              this.msgDisplayService.showSuccessMessage(
-                'Order created successfully.',
-              ),
+            this.loadOrders(
+              this.pagedOrders?.currentPage ?? this.defaultPageNo,
+              () =>
+                this.msgDisplayService.showSuccessMessage(
+                  'Order created successfully.',
+                ),
             );
             this.hideRepeatOrderModal();
           });

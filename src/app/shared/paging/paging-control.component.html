@@ -1,0 +1,58 @@
+@if (pagedResponse?.totalPages && pagedResponse!.totalPages > 1) {
+  <div class="row">
+    <div class="col-12 d-flex justify-content-center">
+      <!-- pagination -->
+      <div class="pagination-area mt-4 mb-3">
+        <div aria-label="Page navigation example">
+          <ul class="pagination">
+            <li class="page-item">
+              <button
+                class="page-link"
+                aria-label="Previous"
+                type="button"
+                [disabled]="pagedResponse?.previousButtonDisabled"
+                (click)="goToPage(pagedResponse!.currentPage - 1)"
+              >
+                <span aria-hidden="true"
+                  ><i class="fa fa-angle-double-left"></i
+                ></span>
+              </button>
+            </li>
+
+            @for (pageNo of pagedResponse?.pageNumbers; track $index) {
+              <li
+                [class]="[
+                  'page-item',
+                  pagedResponse?.currentPage == pageNo ? 'active' : '',
+                ]"
+              >
+                <button
+                  class="page-link"
+                  type="button"
+                  (click)="goToPage(pageNo)"
+                >
+                  {{ pageNo }}
+                </button>
+              </li>
+            }
+
+            <li class="page-item">
+              <button
+                class="page-link"
+                aria-label="Next"
+                type="button"
+                [disabled]="pagedResponse?.nextButtonDisabled"
+                (click)="goToPage(pagedResponse!.currentPage + 1)"
+              >
+                <span aria-hidden="true"
+                  ><i class="fa fa-angle-double-right"></i
+                ></span>
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <!-- pagination end -->
+    </div>
+  </div>
+}
