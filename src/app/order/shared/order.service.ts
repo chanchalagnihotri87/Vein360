@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import PagedResponse from '../../shared/paged-response/paged-response';
 import { Order } from './order';
 
 @Injectable({
@@ -21,7 +22,7 @@ export class OrderService {
   updateOrder(id: number, clinicId: number, quantity: number) {
     return this.httpClient.patch<Order>(
       `${this.baseUrl}/${id}?clinicId=${clinicId}&quantity=${quantity}`,
-      {}
+      {},
     );
   }
 
@@ -29,7 +30,9 @@ export class OrderService {
     return this.httpClient.delete(`${this.baseUrl}/${id}`);
   }
 
-  getMyOrders() {
-    return this.httpClient.get<Order[]>(`${this.baseUrl}/myorders`);
+  getMyOrders(page?: number) {
+    return this.httpClient.get<PagedResponse<Order>>(
+      `${this.baseUrl}/myorders?page=${page}`,
+    );
   }
 }
